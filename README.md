@@ -6,6 +6,9 @@ Gigaword
 
 A small Clojure/Java API for the [Gigaword](https://catalog.ldc.upenn.edu/LDC2011T07) corpus.
 
+## Clojars
+[![Clojars Project](http://clojars.org/gigaword/latest-version.svg)](http://clojars.org/gigaword)
+
 ## API
 
 The main API is exposed in the `gigaword.api` package. The class is
