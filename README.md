@@ -6,8 +6,22 @@ Gigaword
 
 A small Clojure/Java API for the [Gigaword](https://catalog.ldc.upenn.edu/LDC2011T07) corpus.
 
-## Clojars
+## Dependency info
 [![Clojars Project](http://clojars.org/gigaword/latest-version.svg)](http://clojars.org/gigaword)
+
+### Leiningen
+```lein
+[gigaword "1.0.1"]
+```
+
+### Maven
+```xml
+<dependency>
+  <groupId>gigaword</groupId>
+  <artifactId>gigaword</artifactId>
+  <version>1.0.1</version>
+</dependency>
+```
 
 ## API
 
