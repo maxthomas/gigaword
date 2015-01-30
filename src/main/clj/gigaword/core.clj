@@ -8,7 +8,11 @@
             [clj-time.local :refer [to-local-date-time]]
             [clj-time.core :refer [date-time now millis]]
             [clj-time.format :refer [formatter parse]]
-            [clj-time.coerce :refer [from-long to-long]]))
+            [clj-time.coerce :refer [from-long to-long]]
+            ;; [taoensso.timbre :as timbre]
+))
+
+;; (timbre/refer-timbre)
 
 (defn path->gzip->str [^String path]
   (with-open [r (->> path
@@ -63,16 +67,16 @@
      (if-let [next (first lines)]
        (cond
         (= next "<P>")
-        (process-paras (rest lines)
+        (recur (rest lines)
                        []
                        paras)
         (= next "</P>")
-        (process-paras (rest lines)
+        (recur (rest lines)
                        []
                        (conj paras current-para))
         ;; else --> text
         :else
-        (process-paras (rest lines)
+        (recur (rest lines)
                        (conj current-para (str next "\n"))
                        paras))
        paras)))
@@ -125,7 +129,7 @@
 
 (defn get-between-tags
   ([lines]
-     (let [endtag (->> lines
+   (let [endtag (->> lines
                        first
                        (end-tag))]
        (get-between-tags (drop 1 lines)
@@ -143,10 +147,10 @@
 
         ;; Otherwise, add to fill and recurse.
         :else
-        (get-between-tags (drop 1 lines)
-                          endtag
-                          (conj fill current)
-                          (inc ctr)))
+        (recur (drop 1 lines)
+               endtag
+               (conj fill current)
+               (inc ctr)))
        (println (str "Error - did not find end tag: " endtag)))))
 
 (defn process-doc
@@ -157,10 +161,11 @@
      (if-let [head (first lines)]
        (cond
         (= (subs head 0 4) "<DOC")
-        (process-doc (rest lines)
-                     (->> head
-                          docline->map
-                          (merge data)))
+        (do
+          (process-doc (rest lines)
+                       (->> head
+                            docline->map
+                            (merge data))))
         (= head "<HEADLINE>")
         (let [[ctr processed] (get-between-tags lines)]
           (process-doc (drop ctr lines)

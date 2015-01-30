@@ -1,4 +1,4 @@
-(defproject gigaword "1.0.1"
+(defproject gigaword "1.0.2-SNAPSHOT"
   :description "Gigaword Clojure/Java API."
   :url "https://github.com/maxthomas/gigaword"
   :license {:name "Eclipse Public License"
@@ -11,7 +11,9 @@
                               [:email "max.thomas@jhu.edu"]]]
 
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [clj-time "0.9.0"]]
+                 [clj-time "0.9.0"]
+                 ;; [com.taoensso/timbre "3.3.1"]
+                 ]
 
   :plugins [[lein-junit "1.1.8"]]
 
