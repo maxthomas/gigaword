@@ -6,6 +6,7 @@ package gigaword.api;
 
 import gigaword.interfaces.GigawordDocument;
 
+import java.nio.file.Path;
 import java.util.Iterator;
 
 import clojure.java.api.Clojure;
@@ -25,17 +26,20 @@ public class GigawordDocumentConverter {
   private IFn gzPathToGigaDocIterFx;
   private IFn pathToGigaDocFx;
   private IFn gigaDocStrToGigaDocFx;
+  private IFn gzPathToGigaStringIterFx;
 
   /**
    * Default, no-arg ctor.
    */
   public GigawordDocumentConverter() {
     IFn req = Clojure.var("clojure.core", "require");
+    req.invoke(Clojure.read("gigaword.core"));
     req.invoke(Clojure.read("gigaword.interop"));
 
     this.gzPathToGigaDocIterFx = Clojure.var("gigaword.interop", "gigazip->pcs");
     this.pathToGigaDocFx = Clojure.var("gigaword.interop", "proxydoc->pc");
     this.gigaDocStrToGigaDocFx = Clojure.var("gigaword.interop", "proxystr->pc");
+    this.gzPathToGigaStringIterFx = Clojure.var("gigaword.core", "gigazip->proxystrs");
   }
 
   /**
@@ -61,6 +65,12 @@ public class GigawordDocumentConverter {
   public Iterator<GigawordDocument> iterator(String pathToGZFile) {
     LazySeq seq = (LazySeq)this.gzPathToGigaDocIterFx.invoke(pathToGZFile);
     return new GigawordDocumentIterator(seq.iterator());
+  }
+
+  @SuppressWarnings("unchecked")
+  public Iterator<String> stringIterator(Path pathToGZFile) {
+    LazySeq seq = (LazySeq)this.gzPathToGigaStringIterFx.invoke(pathToGZFile.toString());
+    return (Iterator<String>)seq.iterator();
   }
 
   /**

@@ -6,11 +6,10 @@
   (:gen-class)
   (:require [clojure.string :as str]
             [clj-time.local :refer [to-local-date-time]]
-            [clj-time.core :refer [date-time now millis]]
             [clj-time.format :refer [formatter parse]]
             [clj-time.coerce :refer [from-long to-long]]
             ;; [taoensso.timbre :as timbre]
-))
+            ))
 
 ;; (timbre/refer-timbre)
 
@@ -257,12 +256,12 @@
 (defn gigazip->proxystrs [^String gzip-path]
   (->> gzip-path
        (path->gzip->str)
-       (#(str/split % #"</DOC>\n"))))
+       (#(str/split % #"</DOC>\n"))
+       (map #(str % "</DOC>"))))
 
 (defn gigazip->clj [^String gzip-path]
   (->> gzip-path
        (gigazip->proxystrs)
-       (map #(str % "</DOC>"))
        (map str/trim)
        (map proxy->map)))
 
