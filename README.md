@@ -11,7 +11,7 @@ A small Clojure/Java API for the [Gigaword](https://catalog.ldc.upenn.edu/LDC201
 
 ### Leiningen
 ```lein
-[gigaword "1.1.0"]
+[gigaword "2.0.0"]
 ```
 
 ### Maven
@@ -19,7 +19,7 @@ A small Clojure/Java API for the [Gigaword](https://catalog.ldc.upenn.edu/LDC201
 <dependency>
   <groupId>gigaword</groupId>
   <artifactId>gigaword</artifactId>
-  <version>1.1.0</version>
+  <version>2.0.0</version>
 </dependency>
 ```
 
