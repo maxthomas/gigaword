@@ -1,4 +1,4 @@
-(defproject gigaword "2.0.0-SNAPSHOT"
+(defproject gigaword "2.0.0"
   :description "Gigaword Clojure/Java API."
   :url "https://github.com/maxthomas/gigaword"
   :license {:name "Eclipse Public License"
