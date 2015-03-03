@@ -49,6 +49,14 @@ public class GigawordDocumentConverter {
   public GigawordDocument fromPathString(String pathToGigaSGMLFile) {
     return (GigawordDocument)this.pathToGigaDocFx.invoke(pathToGigaSGMLFile);
   }
+  
+  /**
+   * @param pathToGigaSGMLFile a {@link Path} that represents a path to a .sgml file on disk.
+   * @return a {@link GigawordDocument} object that represents the .sgml file
+   */
+  public GigawordDocument fromPath(Path pathToGigaSGMLFile) {
+    return this.fromPathString(pathToGigaSGMLFile.toString());
+  }
 
   /**
    * @param gigaDocSGMLString a string that represents the contents of a .sgml file
@@ -59,12 +67,20 @@ public class GigawordDocumentConverter {
   }
 
   /**
-   * @param pathToGZFile a path to a .gz file of concatenated .sgml files
+   * @param pathToGZFile a string representing a path to a .gz file of concatenated .sgml files
    * @return an {@link Iterator} of {@link GigawordDocument} objects from the .gz file
    */
   public Iterator<GigawordDocument> iterator(String pathToGZFile) {
     LazySeq seq = (LazySeq)this.gzPathToGigaDocIterFx.invoke(pathToGZFile);
     return new GigawordDocumentIterator(seq.iterator());
+  }
+  
+  /**
+   * @param pathToGZFile a {@link Path} to a .gz file of concatenated .sgml files
+   * @return an {@link Iterator} of {@link GigawordDocument} objects from the .gz file
+   */
+  public Iterator<GigawordDocument> iterator(Path pathToGZFile) {
+    return this.iterator(pathToGZFile.toString());
   }
 
   @SuppressWarnings("unchecked")

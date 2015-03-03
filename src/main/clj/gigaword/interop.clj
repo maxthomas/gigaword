@@ -5,6 +5,7 @@
 (ns gigaword.interop
   (:require [gigaword.core :as giga])
   (:import [gigaword.interfaces GigawordDocument TextSpan]
+           [gigaword GigawordDocumentType]
            [java.util ArrayList Optional]))
 
 (defn tuple->cts [[o t]]
@@ -34,7 +35,9 @@
     (getText [this]
       text)
     (getType [this]
-      type)
+      (->> type
+           .toUpperCase
+           GigawordDocumentType/valueOf))
     (getMillis [this]
       millis)
     (getId [this]
