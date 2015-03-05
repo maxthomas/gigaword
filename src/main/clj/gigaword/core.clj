@@ -95,6 +95,9 @@
 (defn kill-quotes [^String s]
   (.replaceAll s "\"" ""))
 
+(defn kill-carets [^String s]
+  (.replaceAll s ">" ""))
+
 (defn docline->map [^String docline]
   (->> (clojure.string/split docline #" ")
        (filter (fn [^String _]
@@ -102,7 +105,9 @@
        (map #(clojure.string/split % #"="))
        (map (fn [[f s]]
               (hash-map (keyword f)
-                        (kill-quotes s))))
+                        (->> s
+                             (kill-quotes)
+                             (kill-carets)))))
        (reduce merge)))
 
 (defn lines->text [lines]

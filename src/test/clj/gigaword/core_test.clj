@@ -5,6 +5,19 @@
             [clojure.java.io :refer [resource file]]))
 
 (def docline "<DOC id=\"NYT_ENG_20010901.0015\" type=\"story\" >")
+(def nospace "<DOC id=\"WPB_ENG_20100901.0001\" type=\"story\">")
+
+
+(deftest docline-parsing
+  (is (= {:id "NYT_ENG_20010901.0015"
+          :type "story"}
+         (giga/docline->map docline))))
+
+(deftest nospace-parsing
+  (is (= {:id "WPB_ENG_20100901.0001"
+          :type "story"}
+         (giga/docline->map nospace))))
+
 (deftest docline-parsing
   (is (= {:id "NYT_ENG_20010901.0015"
           :type "story"}
