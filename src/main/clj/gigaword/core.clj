@@ -276,3 +276,108 @@
        (clojure.string/split-lines)
        (pmap gigazip->clj)
        (flatten)))
+
+(def testdata (->> "src/main/resources/serif_dateline.sgml"
+                   slurp))
+
+
+
+(def tags #{"<HEADLINE>" "</HEADLINE>"
+           "</P>" "<P>"
+           "<TEXT>" "</TEXT>"
+           "<DATELINE>" "</DATELINE>"
+           "</DOC>"})
+
+;; (defn process-sgml-bak
+;;   ([^String sgmltxt]
+;;    (let [lines (->> (str/split-lines sgmltxt)
+;;                     reverse
+;;                     (into ()))]
+;;      (process-sgml-bak lines [] "" 0)))
+
+;;   ([lines sections tag cctr]
+
+;;    (if (= 0 (count lines))
+;;      ;; Return if no more lines.
+;;      sections
+;;      ;;
+;;      (let [ln (first lines)
+;;            ct (count ln)]
+;;        (condp = ln
+;;          )
+;;        (process-sgml
+;;         (pop lines)
+;;         (conj sections {:b cctr
+;;                         :e (+ cctr ct)
+;;                         :k kind})
+;;         tag
+;;         (+ cctr ct 1))))))
+
+;; (process-sgml testdata)
+
+(defn infer-sections
+  ([lines cctr]
+   (infer-sections lines [] :docline cctr))
+  ([lines sections tag cctr]
+   (if (= 0 (count lines))
+     ;; Return if no more lines.
+     sections
+     (let [ln (first lines)
+           ct (count ln)
+           elen (+ cctr ct)
+           nctr (+ cctr ct 1)
+           rest (pop lines)]
+
+       (infer-sections
+        rest
+        (conj sections {:b cctr
+                        :e elen
+                        :t tag})
+        (classify-passage tag ln)
+        nctr)))))
+
+(defn classify-passage [ptag ^String ln]
+  (cond
+    ;; If the line starts with </, this is an endtag.
+    (.startsWith ln "</")    :endtag
+
+    ;; If the line starts with <HEADLINE>, this is a headline tag.
+    (= "<HEADLINE>" ln)      :hltag
+
+    ;; If the previous tag was HEADLINE, this is a headline section.
+    (= :hltag ptag)          :headline
+
+    ;; If the line starts with <DATELINE>, this is a dateline tag.
+    (= "<DATELINE>" ln)      :dltag
+
+    ;; If the previous tag was a DATELINE, this is a dateline section.
+    (= :dltag ptag)          :dateline
+
+    ;; If the line starts with <, it is a start tag.
+    (.startsWith ln "<")     :starttag
+
+    ;; Otherwise, it's a passage.
+    :else                    :passage))
+
+(defn process-docline [^String docline]
+  (let [spl (str/split docline #"\"")]
+    {:id (nth spl 1)
+     :kind (nth spl 3)}))
+
+(defn process-gw [^String sgml]
+  (let [lines (->> testdata
+                   (str/split-lines))
+        fl (->> lines
+                first)
+        dllen (+ (count fl)
+                 1)
+        dlmap (->> fl
+                   process-docline)
+        sects (->> lines
+                   rest
+                   reverse
+                   (into ())
+                   (#(infer-sections % dllen)))]
+    sects))
+
+(process-gw testdata)
