@@ -3,6 +3,7 @@
 (ns gigaword.core
   (:gen-class)
   (:require [clojure.string :as str]
+            [clojure.pprint :as pp]
             [clj-time.local :refer [to-local-date-time]]
             [clj-time.format :refer [formatter parse]]
             [clj-time.coerce :refer [from-long to-long]]
@@ -139,5 +140,4 @@
                  first
                  slurp
                  process-ldc-sgml)]
-    (with-out-str
-      (clojure.pprint/pprint res))))
+    (pp/pprint res)))
