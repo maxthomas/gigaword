@@ -131,3 +131,13 @@
                    (into []))]
     (conj dlmap
           {:sections sects})))
+
+(defn -main
+  "Ingest and print an LDC SGML file."
+  [& args]
+  (let [res (->> args
+                 first
+                 slurp
+                 process-ldc-sgml)]
+    (with-out-str
+      (clojure.pprint/pprint res))))
