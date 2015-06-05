@@ -73,24 +73,50 @@
 (defn infer-sections
   "Establish text spans for an SGML document. Does not mutate the text."
   ([lines cctr]
-   (infer-sections lines [] :docline cctr))
-  ([lines sections tag cctr]
+   (infer-sections
+    lines
+    :docline
+    cctr
+    [{:b 0 :e (- cctr 1) :t :docline}]))
+  ([lines tag cctr sections]
    (if (= 0 (count lines))
      ;; Return if no more lines.
      sections
+
      (let [ln (first lines)
+           rest (pop lines)
            ct (count ln)
            elen (+ cctr ct)
-           nctr (+ cctr ct 1)
-           rest (pop lines)]
+           newtag (classify-passage tag ln)
 
-       (infer-sections
-        rest
-        (conj sections {:b cctr
-                        :e elen
-                        :t tag})
-        (classify-passage tag ln)
-        nctr)))))
+           pnext (partial infer-sections rest
+                          newtag
+                          (+ elen 1))
+
+           lastsect (->> sections
+                         peek)
+           pst (->> lastsect
+                    :t)]
+
+       ;; If the previous section was a passage
+       ;; and this section is a passage, merge them.
+       (if (and (= :passage pst)
+                (= :passage newtag))
+         (let [nolastsect (->> sections
+                               pop)
+               nsects (->> (assoc lastsect :e elen)
+                           (conj nolastsect))]
+           (pnext nsects))
+         (pnext (conj sections {:b cctr
+                                :e elen
+                                :t newtag})))))))
+
+;; (infer-sections
+;;  newtag
+;;  (+ elen 1)
+;;  (conj sections {:b cctr
+;;                  :e elen
+;;                  :t newtag}))
 
 (defn process-docline
   "Process the <DOC...> line (first line) of LDC SGML documents."
@@ -125,10 +151,10 @@
                    (into ())
                    (#(infer-sections % dllen))
                    (filter (fn [_]
-                             (let [{tag :t} _]
-                               (or (= tag :headline)
-                                   (= tag :dateline)
-                                   (= tag :passage)))))
+                             (let [{t :t} _]
+                               (or (= :headline t)
+                                   (= :dateline t)
+                                   (= :passage t)))))
                    (into []))]
     (conj dlmap
           {:sections sects})))
