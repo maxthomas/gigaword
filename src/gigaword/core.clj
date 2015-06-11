@@ -106,8 +106,14 @@
                                pop)
                nsects (->> (assoc lastsect :e elen)
                            (conj nolastsect))]
-           (pnext nsects))
-         (pnext (conj sections {:b cctr
+           (recur rest
+                  newtag
+                  (+ elen 1)
+                  nsects))
+         (recur rest
+                newtag
+                (+ elen 1)
+                (conj sections {:b cctr
                                 :e elen
                                 :t newtag})))))))
 
