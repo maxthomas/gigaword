@@ -1,4 +1,4 @@
-(defproject gigaword "3.0.2-SNAPSHOT"
+(defproject gigaword "3.1.0-SNAPSHOT"
   :description "Gigaword Clojure API."
   :url "https://github.com/maxthomas/gigaword"
   :license {:name "Eclipse Public License"
@@ -7,7 +7,7 @@
   :pom-addition [:developers [:developer
                               [:id "maxthomas"]
                               [:name "Max Thomas"]
-                              [:url "http://www.maxjthomas.com"]
+                              [:url "http://www.maxthomas.io"]
                               [:email "max.thomas@jhu.edu"]]]
 
   :dependencies [[org.clojure/clojure "1.6.0"]
@@ -16,9 +16,6 @@
   :main ^:skip-aot gigaword.core
 
   :global-vars { *warn-on-reflection* true }
-
-  ;; :source-paths ["src/main/clj"]
-  ;; :test-paths ["src/test/clj"]
 
   :target-path "target/%s"
 

@@ -2,15 +2,13 @@
 ;; See LICENSE in the project root directory.
 (ns gigaword.core
   (:gen-class)
+  (:import [java.util.zip GZIPInputStream])
   (:require [clojure.string :as str]
+            [clojure.java.io :as io]
             [clojure.pprint :as pp]
             [clj-time.local :refer [to-local-date-time]]
             [clj-time.format :refer [formatter parse]]
-            [clj-time.coerce :refer [from-long to-long]]
-            ;; [taoensso.timbre :as timbre]
-            ))
-
-;; (timbre/refer-timbre)
+            [clj-time.coerce :refer [from-long to-long]]))
 
 ;; The format of dates in LDC SGML IDs.
 (def giga-dt-formatter (formatter "yyyyMMdd"))
@@ -164,6 +162,50 @@
                    (into []))]
     (conj dlmap
           {:sections sects})))
+
+(defn lines->docs
+  "Take concatenated SGML documents and return a vector
+  of strings representing individual SGML documents."
+  ([lines]
+   (lines->docs [] [] lines))
+  ([cdoc docs lines]
+   ;; if lines are empty, return docs.
+   (if (empty? lines)
+     docs
+     (let [^String f (first lines)
+           r (rest lines)]
+       ;; If the line begins with the document start,
+       ;; start a new document by recursing.
+       (if (.startsWith f "<DOC id=")
+         (recur [f]
+                docs
+                r)
+
+         ;; otherwise, add the lines to the current doc.
+         (let [ndoc (conj cdoc f)]
+           ;; If the tag is the end document tag, this document is finished.
+           (if (= "</DOC>" f)
+             (do
+               (recur []
+                      (conj docs
+                            (str/join "\n" ndoc))
+                      r))
+
+             ;; otherwise, keep recursing.
+             (recur ndoc
+                    docs
+                    r))))))))
+
+(defn gz->docs
+  "Take a string path and convert it to
+  a sequence of strings representing individual SGML documents."
+  [^String path]
+  (with-open [in (io/input-stream path)
+              gz (new GZIPInputStream in)
+              rdr (io/reader gz)]
+    (->> rdr
+         line-seq
+         lines->docs)))
 
 (defn -main
   "Ingest and print an LDC SGML file."
