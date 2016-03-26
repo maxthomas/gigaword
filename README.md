@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/maxthomas/gigaword.svg?branch=master)](https://travis-ci.org/maxthomas/gigaword)
+
 Copyright 2012-2015 Johns Hopkins University HLTCOE. All rights
 reserved. See LICENSE in the project root directory.
 
